@@ -1,5 +1,6 @@
 ﻿using GamJam.GameStates;
-using System.Threading.Tasks;
+using System.Collections;
+using UnityEngine;
 
 namespace GamJam
 {
@@ -9,19 +10,19 @@ namespace GamJam
         {
         }
 
-        public override async void Enter()
+        public override void Enter()
         {
             _ctx.SetLevelComplete();
-            await ShowDelay();
+            GameManager.Instance.StartCoroutine(ShowDelay());
         }
 
         public override void Exit()
         {
             _ctx.Ui.levelComplete.Show(false);
         }
-        private async Task ShowDelay()
+        private IEnumerator ShowDelay()
         {
-            await Task.Delay(500);
+            yield return new WaitForSeconds(.5f);
             _ctx.Ui.levelComplete.Show(true);
         }
     }

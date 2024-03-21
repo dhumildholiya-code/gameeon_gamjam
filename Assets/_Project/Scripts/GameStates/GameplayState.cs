@@ -20,10 +20,10 @@ namespace GamJam.GameStates
             _ctx.GameController.Init();
         }
 
-        public override async void Exit()
+        public override void Exit()
         {
             _ctx.gameStateChange.Unregister(_ctx.ChangeState);
-            await _ctx.GameController.Exit();
+            _ctx.StartCoroutine(_ctx.GameController.Exit());
             _ctx.Ui.gameplay.Show(false);
         }
     }

@@ -1,5 +1,7 @@
 ﻿using GamJam.GameStates;
+using System.Collections;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace GamJam
 {
@@ -9,9 +11,9 @@ namespace GamJam
         {
         }
 
-        public override async void Enter()
+        public override void Enter()
         {
-            await ShowDelay();
+            _ctx.StartCoroutine(ShowDelay());
         }
 
         public override void Exit()
@@ -19,9 +21,9 @@ namespace GamJam
             _ctx.Ui.levelFailed.Show(false);
         }
 
-        private async Task ShowDelay()
+        private IEnumerator ShowDelay()
         {
-            await Task.Delay(500);
+            yield return new WaitForSeconds(.5f);
             _ctx.Ui.levelFailed.Show(true);
         }
     }

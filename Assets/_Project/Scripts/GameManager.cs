@@ -1,7 +1,7 @@
 ﻿using GamJam.EventChannel;
 using GamJam.GameStates;
 using System;
-using System.Threading.Tasks;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,6 +10,7 @@ namespace GamJam
     public class GameManager : MonoBehaviour
     {
         private static GameManager _instance;
+        public static GameManager Instance  => _instance;
         public static event Action<int> OnLevelUnlocked;
 
         [SerializeField]
@@ -110,33 +111,41 @@ namespace GamJam
             PlayerPrefs.SetInt("lastLevelUnlocked", _currentLevelId + 1);
         }
 
-        public async void LoadLevelAsync(int levelIndex = -1)
+        public void LoadLevelAsync(int levelIndex = -1)
+        {
+            StartCoroutine(Co_LoadLevel(levelIndex));
+        }
+        public void RetryLevelAsync()
+        {
+            StartCoroutine(Co_RetryLevel());
+        }
+        public IEnumerator Co_LoadLevel(int levelIndex = -1)
         {
             if (levelIndex != -1)
                 _currentLevelId = levelIndex;
             else
                 _currentLevelId++;
             Ui.ShowLoadingScreen(true);
-            await LoadScene(CurrentSceneName);
-            await Task.Delay(100);
-            Ui.ShowLoadingScreen(false);
-            ChangeState(GameState.Gameplay);
-        }
-        public async void RetryLevelAsync()
-        {
-            Ui.ShowLoadingScreen(true);
-            await LoadScene(CurrentSceneName);
-            await Task.Delay(100);
-            Ui.ShowLoadingScreen(false);
-            ChangeState(GameState.Gameplay);
-        }
-        public async Task LoadScene(string level)
-        {
-            var ao = SceneManager.LoadSceneAsync(level);
+            var ao = SceneManager.LoadSceneAsync(CurrentSceneName);
             while (ao.isDone)
             {
-                await Task.Yield();
+                yield return null;
             }
+            yield return new WaitForSeconds(.1f);
+            Ui.ShowLoadingScreen(false);
+            ChangeState(GameState.Gameplay);
+        }
+        public IEnumerator Co_RetryLevel()
+        {
+            Ui.ShowLoadingScreen(true);
+            var ao = SceneManager.LoadSceneAsync(CurrentSceneName);
+            while (ao.isDone)
+            {
+                yield return null;
+            }
+            yield return new WaitForSeconds(.1f);
+            Ui.ShowLoadingScreen(false);
+            ChangeState(GameState.Gameplay);
         }
     }
 }

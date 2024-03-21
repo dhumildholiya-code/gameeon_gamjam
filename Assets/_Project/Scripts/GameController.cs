@@ -1,5 +1,6 @@
 using GamJam.Gameplay;
 using GamJam.MyGrid;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -66,11 +67,11 @@ namespace GamJam
         }
 
 
-        public async Task Exit()
+        public IEnumerator Exit()
         {
             while (_isRunning)
             {
-                await Task.Yield();
+                yield return null;
             }
             _input = null;
             _ninjaMovable = null;
